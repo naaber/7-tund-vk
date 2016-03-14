@@ -17,6 +17,8 @@
      this.online = null;
      this.status = null;
      this.phone = 0;
+     this.answer = "";
+     this.answered_questions = [];
 
      this.init();
    };
@@ -91,7 +93,21 @@
                  Game.instance.serveQuestion();
                }, 1000);
             }else{
-              alert(q.question);
+              if(localStorage.answered_questions){
+                for(var i; i < localStorage.answered_questions.length; i++){
+                  if(q.id != localStorage.answered_questions[i]){
+                    Game.instance.answer = prompt(q.question);
+                    Game.instance.saveAnswer(q.question);
+                    Game.instance.answered_questions.push(q.id);
+                    localStorage.setItem('answered_questions', Game.instance.answered_questions);
+                  }
+                }
+              }else{
+                Game.instance.answer = prompt(q.question);
+                Game.instance.saveAnswer(q.question);
+                Game.instance.answered_questions.push(q.id);
+                localStorage.setItem('answered_questions', Game.instance.answered_questions);
+              }
             }
           }
          };
@@ -115,7 +131,18 @@
            this.askPhone();
          }
        }
-     }
+     },
+     saveAnswer: function(question){
+       var xhttp = new XMLHttpRequest();
+       xhttp.onreadystatechange = function() {
+         if (xhttp.readyState == 4 && xhttp.status == 200) {
+           console.log('salvestas serverisse');
+         }
+      };
+      console.log("saveData.php?phone=" + this.phone + "&question=" + question + "&answer=" + this.answer);
+      xhttp.open("GET", "saveData.php?phone=" + this.phone + "&question=" + question + "&answer=" + this.answer, true);
+      xhttp.send();
+    }
 
     }; // Game LÕPP
 
